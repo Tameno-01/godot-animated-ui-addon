@@ -1,6 +1,24 @@
-[gd_scene load_steps=2 format=3 uid="uid://buf7u2mktqmar"]
+[gd_scene load_steps=9 format=3 uid="uid://buf7u2mktqmar"]
 
 [ext_resource type="Texture2D" uid="uid://b1hfimu7lpvx0" path="res://icon.svg" id="1_tgb2t"]
+[ext_resource type="Script" uid="uid://c6p2r4pa4dquj" path="res://addons/animated_ui/animated_control.gd" id="1_ym2x3"]
+[ext_resource type="Script" uid="uid://ck6k54njyes1o" path="res://addons/animated_ui/ui_animation_library.gd" id="2_v5buj"]
+[ext_resource type="Script" uid="uid://gl35ba507xub" path="res://addons/animated_ui/ui_animation_metadata.gd" id="3_b8tpt"]
+[ext_resource type="Script" uid="uid://djbqgvif707kp" path="res://testing/test_animation/test_anim_1.gd" id="3_dhqui"]
+
+[sub_resource type="Resource" id="Resource_71rxn"]
+script = ExtResource("3_dhqui")
+distance = -100.0
+
+[sub_resource type="Resource" id="Resource_4agfo"]
+script = ExtResource("3_b8tpt")
+animation = SubResource("Resource_71rxn")
+duration = 0.2
+reverse = false
+
+[sub_resource type="Resource" id="Resource_gelqt"]
+script = ExtResource("2_v5buj")
+show = SubResource("Resource_4agfo")
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -12,31 +30,33 @@ grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 1
+offset_right = 128.0
+offset_bottom = 260.0
 
-[node name="Control" type="Control" parent="VBoxContainer"]
+[node name="AnimatedControl" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+script = ExtResource("1_ym2x3")
+animations = SubResource("Resource_gelqt")
 
-[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -64.0
-offset_top = -64.0
-offset_right = 64.0
-offset_bottom = 64.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/AnimatedControl"]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 128.0
+texture = ExtResource("1_tgb2t")
+
+[node name="AnimatedControl2" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+script = ExtResource("1_ym2x3")
+animations = SubResource("Resource_gelqt")
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/AnimatedControl2"]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 128.0
 texture = ExtResource("1_tgb2t")
