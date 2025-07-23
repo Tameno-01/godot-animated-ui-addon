@@ -9,7 +9,7 @@ var progress: float
 
 # This function takes in a refernce to a dictionary and modifies said dictionary
 # The boolean output is whether the animation finished or not
-func play(properties: Dictionary, delta: float) -> bool:
+func play(properties: Dictionary[GDScript, Variant], delta: float) -> bool:
 	if reverse:
 		if progress == 0.0:
 			return true
@@ -19,15 +19,11 @@ func play(properties: Dictionary, delta: float) -> bool:
 			return true
 		progress += delta / duration
 	progress = clamp(progress, 0.0, 1.0)
-	var anim_output: Dictionary = animation.play(progress)
-	for property: StringName in anim_output:
+	var anim_output: Dictionary[GDScript, Variant] = animation.play(progress)
+	for property: GDScript in anim_output:
 		if properties.has(property):
-			properties[property] = animation.combine_property(
-					property,
-					properties[property],
-					anim_output[property],
-			)
-		else: # properties does not have property.
+			properties[property] = property.combine(properties[property], anim_output[property])
+		else:
 			properties[property] = anim_output[property]
 	return false
 

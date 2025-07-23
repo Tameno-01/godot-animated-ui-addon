@@ -1,29 +1,19 @@
-[gd_scene load_steps=10 format=3 uid="uid://buf7u2mktqmar"]
+[gd_scene load_steps=12 format=3 uid="uid://buf7u2mktqmar"]
 
 [ext_resource type="Script" uid="uid://c6p2r4pa4dquj" path="res://addons/animated_ui/animated_control.gd" id="1_ym2x3"]
 [ext_resource type="Script" uid="uid://ck6k54njyes1o" path="res://addons/animated_ui/ui_animation_library.gd" id="2_v5buj"]
 [ext_resource type="Script" uid="uid://gl35ba507xub" path="res://addons/animated_ui/ui_animation_metadata.gd" id="3_b8tpt"]
-[ext_resource type="Script" uid="uid://djbqgvif707kp" path="res://testing/test_animation/test_anim_1.gd" id="3_erfnp"]
+[ext_resource type="Script" uid="uid://djbqgvif707kp" path="res://testing/test_animation/test_anim_1.gd" id="3_dhqui"]
+[ext_resource type="Script" uid="uid://de8pq7ape88t8" path="res://testing/test_animation/hewwiwewwy.gd" id="5_0jdpv"]
 
-[sub_resource type="Resource" id="Resource_ijl77"]
-script = ExtResource("3_erfnp")
+[sub_resource type="Resource" id="Resource_erfnp"]
+script = ExtResource("3_dhqui")
 distance = -100.0
 metadata/_custom_type_script = "uid://djbqgvif707kp"
 
-[sub_resource type="Resource" id="Resource_r4e3w"]
-script = ExtResource("3_b8tpt")
-animation = SubResource("Resource_ijl77")
-duration = 0.2
-reverse = false
-metadata/_custom_type_script = "uid://gl35ba507xub"
-
-[sub_resource type="Resource" id="Resource_h00um"]
-script = ExtResource("2_v5buj")
-show = SubResource("Resource_r4e3w")
-metadata/_custom_type_script = "uid://ck6k54njyes1o"
-
 [sub_resource type="Resource" id="Resource_0jdpv"]
 script = ExtResource("3_b8tpt")
+animation = SubResource("Resource_erfnp")
 duration = 0.2
 reverse = false
 metadata/_custom_type_script = "uid://gl35ba507xub"
@@ -32,6 +22,21 @@ metadata/_custom_type_script = "uid://gl35ba507xub"
 script = ExtResource("2_v5buj")
 show = SubResource("Resource_0jdpv")
 metadata/_custom_type_script = "uid://ck6k54njyes1o"
+
+[sub_resource type="Resource" id="Resource_ijl77"]
+script = ExtResource("5_0jdpv")
+starting_rotation = 1.5708
+metadata/_custom_type_script = "uid://de8pq7ape88t8"
+
+[sub_resource type="Resource" id="Resource_4agfo"]
+script = ExtResource("3_b8tpt")
+animation = SubResource("Resource_ijl77")
+duration = 0.2
+reverse = false
+
+[sub_resource type="Resource" id="Resource_gelqt"]
+script = ExtResource("2_v5buj")
+show = SubResource("Resource_4agfo")
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -52,7 +57,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 script = ExtResource("1_ym2x3")
-animations = SubResource("Resource_h00um")
 
 [node name="Button" type="Button" parent="VBoxContainer/AnimatedControl"]
 layout_mode = 0
@@ -60,15 +64,29 @@ offset_right = 92.0
 offset_bottom = 31.0
 text = "aaaaaaaaa"
 
-[node name="AnimatedControl2" type="Control" parent="VBoxContainer"]
+[node name="AnimatedControl3" type="Control" parent="VBoxContainer"]
 custom_minimum_size = Vector2(46, 31)
 layout_mode = 2
 script = ExtResource("1_ym2x3")
 animations = SubResource("Resource_6mlmr")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
 
-[node name="Button" type="Button" parent="VBoxContainer/AnimatedControl2"]
+[node name="Button" type="Button" parent="VBoxContainer/AnimatedControl3"]
 layout_mode = 0
 offset_right = 46.0
 offset_bottom = 31.0
 text = "aaaa"
+
+[node name="AnimatedControl2" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(92, 31)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_ym2x3")
+animations = SubResource("Resource_gelqt")
+
+[node name="Button" type="Button" parent="VBoxContainer/AnimatedControl2"]
+layout_mode = 0
+offset_right = 92.0
+offset_bottom = 31.0
+text = "aaaaaaaaa"

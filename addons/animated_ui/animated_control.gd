@@ -37,7 +37,7 @@ func _process(delta: float) -> void:
 		playbacks_to_play.append(_show_playback)
 	if _hide_playback != null:
 		playbacks_to_play.append(_hide_playback)
-	var properties: Dictionary = {}
+	var properties: Dictionary[GDScript, Variant] = {}
 	for playback: UiAnimationPlayback in playbacks_to_play:
 		var ended: bool = playback.play(properties, delta)
 		if ended:
@@ -46,18 +46,8 @@ func _process(delta: float) -> void:
 			if playback == _hide_playback:
 				_hide_playback = null
 				hide()
-	for i in range(playbacks_to_play.size() - 1, -1, -1):
-		for property: StringName in properties.keys():
-			var applied: bool = playbacks_to_play[i].animation.apply_property(
-					property,
-					properties[property],
-					_child,
-					null,
-			)
-			if applied:
-				properties.erase(property)
-		if properties.is_empty():
-			break
+	for property: GDScript in properties:
+		property.apply(properties[property], _child)
 
 
 func animated_show() -> void:
@@ -114,6 +104,7 @@ func animated_hide() -> void:
 func _notification(what: int) -> void:
 	match what:
 		NOTIFICATION_EDITOR_PRE_SAVE:
+			# TODO: make sure things are in a good state when saving
 			pass
 
 
