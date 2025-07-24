@@ -28,6 +28,23 @@ var _hide_playback: UiAnimationPlayback = null
 	set(value):
 		animations = value
 		_update_animation_library()
+@export_group("Canvas Group")
+@export var act_as_canvas_group: bool = false:
+	set(value):
+		act_as_canvas_group = value
+		_update_canvas_group_mode()
+@export var clear_margin: float = 10.0:
+	set(value):
+		clear_margin = value
+		_update_canvas_group_mode()
+@export var fit_margin: float = 10.0:
+	set(value):
+		fit_margin = value
+		_update_canvas_group_mode()
+@export var blur_mipmaps: bool = false:
+	set(value):
+		blur_mipmaps = value
+		_update_canvas_group_mode()
 
 
 func _init() -> void:
@@ -60,6 +77,17 @@ func _process(delta: float) -> void:
 				hide()
 	for property: GDScript in properties:
 		property.apply(properties[property], _child)
+
+
+func _update_canvas_group_mode() -> void:
+	RenderingServer.canvas_item_set_canvas_group_mode(
+		get_canvas_item(),
+		RenderingServer.CANVAS_GROUP_MODE_TRANSPARENT,
+		clear_margin,
+		true,
+		fit_margin,
+		blur_mipmaps
+	)
 
 
 func animated_show() -> void:
@@ -147,6 +175,8 @@ func _update_child(new_child: Control) -> void:
 func _update_child_properties() -> void:
 	size = _child.size
 	custom_minimum_size = _child.get_minimum_size()
+	await get_tree().process_frame
+	_child.size = size
 
 
 func _update_animation_library() -> void:
