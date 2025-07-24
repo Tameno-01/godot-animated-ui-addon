@@ -1,25 +1,40 @@
-[gd_scene load_steps=10 format=3 uid="uid://buf7u2mktqmar"]
+[gd_scene load_steps=13 format=3 uid="uid://buf7u2mktqmar"]
 
 [ext_resource type="Script" uid="uid://c6p2r4pa4dquj" path="res://addons/animated_ui/animated_control.gd" id="1_ym2x3"]
+[ext_resource type="Script" uid="uid://1cgfcw7cbykr" path="res://testing/test_animation/wiggleTest.gd" id="2_erfnp"]
 [ext_resource type="Script" uid="uid://ck6k54njyes1o" path="res://addons/animated_ui/ui_animation_library.gd" id="2_v5buj"]
 [ext_resource type="Script" uid="uid://gl35ba507xub" path="res://addons/animated_ui/ui_animation_metadata.gd" id="3_b8tpt"]
-[ext_resource type="Script" uid="uid://djbqgvif707kp" path="res://testing/test_animation/test_anim_1.gd" id="3_erfnp"]
+[ext_resource type="Script" uid="uid://djbqgvif707kp" path="res://testing/test_animation/test_anim_1.gd" id="5_0jdpv"]
 
 [sub_resource type="Resource" id="Resource_ijl77"]
-script = ExtResource("3_erfnp")
-distance = -100.0
-metadata/_custom_type_script = "uid://djbqgvif707kp"
+script = ExtResource("2_erfnp")
+rotation_amplitude = 0.1
+position_amplitude = Vector2(5, 0)
+metadata/_custom_type_script = "uid://1cgfcw7cbykr"
 
 [sub_resource type="Resource" id="Resource_r4e3w"]
 script = ExtResource("3_b8tpt")
 animation = SubResource("Resource_ijl77")
-duration = 0.2
+duration = 2.0
 reverse = false
 metadata/_custom_type_script = "uid://gl35ba507xub"
 
 [sub_resource type="Resource" id="Resource_h00um"]
+script = ExtResource("5_0jdpv")
+distance = -100.0
+metadata/_custom_type_script = "uid://djbqgvif707kp"
+
+[sub_resource type="Resource" id="Resource_neult"]
+script = ExtResource("3_b8tpt")
+animation = SubResource("Resource_h00um")
+duration = 0.2
+reverse = false
+metadata/_custom_type_script = "uid://gl35ba507xub"
+
+[sub_resource type="Resource" id="Resource_erfnp"]
 script = ExtResource("2_v5buj")
-show = SubResource("Resource_r4e3w")
+constant = SubResource("Resource_r4e3w")
+show = SubResource("Resource_neult")
 metadata/_custom_type_script = "uid://ck6k54njyes1o"
 
 [sub_resource type="Resource" id="Resource_0jdpv"]
@@ -52,12 +67,15 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 script = ExtResource("1_ym2x3")
-animations = SubResource("Resource_h00um")
+animations = SubResource("Resource_erfnp")
 
 [node name="Button" type="Button" parent="VBoxContainer/AnimatedControl"]
 layout_mode = 0
-offset_right = 92.0
+offset_left = 4.08694
+offset_right = 96.0869
 offset_bottom = 31.0
+rotation = -0.0576089
+pivot_offset = Vector2(46, 15.5)
 text = "aaaaaaaaa"
 
 [node name="AnimatedControl2" type="Control" parent="VBoxContainer"]

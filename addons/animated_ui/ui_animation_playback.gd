@@ -1,24 +1,33 @@
+@tool
 class_name UiAnimationPlayback
 extends RefCounted
 
 var animation: UiAnimation
 var duration: float
-var reverse: bool
+var reverse: bool = false
+var loop: bool = false
 var progress: float
+
+
+func start() -> void:
+	progress = 1.0 if reverse else 0.0
 
 
 # This function takes in a refernce to a dictionary and modifies said dictionary
 # The boolean output is whether the animation finished or not
 func play(properties: Dictionary[GDScript, Variant], delta: float) -> bool:
 	if reverse:
-		if progress == 0.0:
+		if progress == 0.0 and not loop:
 			return true
 		progress -= delta / duration
 	else: # Not reverse.
-		if progress == 1.0:
+		if progress == 1.0 and not loop:
 			return true
 		progress += delta / duration
-	progress = clamp(progress, 0.0, 1.0)
+	if loop:
+		progress = fposmod(progress, duration)
+	else:
+		progress = clamp(progress, 0.0, 1.0)
 	var anim_output: Dictionary[GDScript, Variant] = animation.play(progress)
 	for property: GDScript in anim_output:
 		if properties.has(property):

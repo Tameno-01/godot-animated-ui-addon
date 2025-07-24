@@ -4,7 +4,15 @@ extends Control
 
 var _animated_visible: bool = true
 var _child: Control = null
-var _animation_library: UiAnimationLibray = null
+var _animation_library: UiAnimationLibray = null:
+	set(value):
+		_animation_library = value
+		_update_constant_animation_playback()
+		if _animation_library != null:
+			_animation_library.constant_animation_changed.connect(
+					_update_constant_animation_playback
+			)
+var _constant_playback: UiAnimationPlayback
 var _show_playback: UiAnimationPlayback = null
 var _hide_playback: UiAnimationPlayback = null
 
@@ -33,6 +41,8 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	var playbacks_to_play: Array[UiAnimationPlayback] = []
+	if _constant_playback != null:
+		playbacks_to_play.append(_constant_playback)
 	if _show_playback != null:
 		playbacks_to_play.append(_show_playback)
 	if _hide_playback != null:
@@ -41,6 +51,8 @@ func _process(delta: float) -> void:
 	for playback: UiAnimationPlayback in playbacks_to_play:
 		var ended: bool = playback.play(properties, delta)
 		if ended:
+			if playback == _constant_playback:
+				_constant_playback = null
 			if playback == _show_playback:
 				_show_playback = null
 			if playback == _hide_playback:
@@ -67,10 +79,7 @@ func animated_show() -> void:
 	_show_playback.animation = _animation_library.show.animation
 	_show_playback.duration = _animation_library.show.duration
 	_show_playback.reverse =  _animation_library.show.reverse
-	if _show_playback.reverse:
-		_show_playback.progress = 1.0
-	else:
-		_show_playback.progress = 0.0
+	_show_playback.start()
 
 
 func animated_hide() -> void:
@@ -95,10 +104,7 @@ func animated_hide() -> void:
 		_hide_playback.animation = _animation_library.hide.animation
 		_hide_playback.duration = _animation_library.hide.duration
 		_hide_playback.reverse = _animation_library.hide.reverse
-	if _hide_playback.reverse:
-		_hide_playback.progress = 1.0
-	else:
-		_hide_playback.progress = 0.0
+	_hide_playback.start()
 
 
 func _notification(what: int) -> void:
@@ -106,6 +112,25 @@ func _notification(what: int) -> void:
 		NOTIFICATION_EDITOR_PRE_SAVE:
 			# TODO: make sure things are in a good state when saving
 			pass
+
+
+func _update_constant_animation_playback():
+	print("_update_constant_animation_playback")
+	if _animation_library == null:
+		_constant_playback = null
+		return
+	if _animation_library.constant == null:
+		_constant_playback = null
+		return
+	if _animation_library.constant.animation == null:
+		_constant_playback = null
+		return
+	_constant_playback = UiAnimationPlayback.new()
+	_constant_playback.animation = _animation_library.constant.animation
+	_constant_playback.duration = _animation_library.constant.duration
+	_constant_playback.reverse = _animation_library.constant.reverse
+	_constant_playback.loop = true
+	_constant_playback.start()
 
 
 func _update_child(new_child: Control) -> void:
