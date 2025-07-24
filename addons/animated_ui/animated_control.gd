@@ -1,5 +1,5 @@
 @tool
-class_name AnimatedControl
+class_name ControlAnimator
 extends Control
 
 var _animated_visible: bool = true

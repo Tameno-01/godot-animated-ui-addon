@@ -45,8 +45,8 @@ metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
 
 [node name="Button" type="Button" parent="VBoxContainer/ControlAnimator"]
 layout_mode = 0
-offset_left = 4.61154
-offset_right = 96.6115
+offset_left = 3.31537
+offset_right = 95.3154
 offset_bottom = 31.0
-rotation = -0.0386457
+rotation = 0.0748553
 text = "aaaa"
