@@ -3,7 +3,7 @@ class_name UiAnimatedPropertyScale
 extends UiAnimatedProperty
 
 
-static func apply(value: Variant, control: Control) -> void:
+static func apply(value: Variant, control: Control, _control_animator: ControlAnimator) -> void:
 	control.scale = value
 
 

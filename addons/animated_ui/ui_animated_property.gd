@@ -7,7 +7,7 @@ func _init() -> void:
 	assert(false, "(Animated Ui) UiAnimatedProperty should never be instanciated.")
 
 
-static func apply(_value: Variant, _control: Control) -> void:
+static func apply(_value: Variant, _control: Control, _animator: ControlAnimator) -> void:
 	return
 
 

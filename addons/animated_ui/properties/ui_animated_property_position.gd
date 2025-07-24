@@ -3,7 +3,7 @@ class_name UiAnimatedPropertyPosition
 extends UiAnimatedProperty
 
 
-static func apply(value: Variant, control: Control) -> void:
+static func apply(value: Variant, control: Control, _control_animator: ControlAnimator) -> void:
 	control.position = value
 
 

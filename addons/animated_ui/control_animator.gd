@@ -54,6 +54,7 @@ func _init() -> void:
 
 func _ready() -> void:
 	update_configuration_warnings()
+	_update_canvas_group_mode()
 
 
 func _process(delta: float) -> void:
@@ -76,18 +77,24 @@ func _process(delta: float) -> void:
 				_hide_playback = null
 				hide()
 	for property: GDScript in properties:
-		property.apply(properties[property], _child)
+		property.apply(properties[property], _child, self)
 
 
 func _update_canvas_group_mode() -> void:
-	RenderingServer.canvas_item_set_canvas_group_mode(
-		get_canvas_item(),
-		RenderingServer.CANVAS_GROUP_MODE_TRANSPARENT,
-		clear_margin,
-		true,
-		fit_margin,
-		blur_mipmaps
-	)
+	if act_as_canvas_group:
+		RenderingServer.canvas_item_set_canvas_group_mode(
+			get_canvas_item(),
+			RenderingServer.CANVAS_GROUP_MODE_TRANSPARENT,
+			clear_margin,
+			true,
+			fit_margin,
+			blur_mipmaps
+		)
+	else:
+		RenderingServer.canvas_item_set_canvas_group_mode(
+			get_canvas_item(),
+			RenderingServer.CANVAS_GROUP_MODE_DISABLED
+		)
 
 
 func animated_show() -> void:
@@ -192,7 +199,10 @@ func _on_child_enter_tree(node: Node) -> void:
 
 func _on_child_exitig_tree(node: Node) -> void:
 	if node == _child:
-		_update_child(null)
+		if get_child_count() == 0:
+			_update_child(null)
+		else:
+			_update_child(get_child(0))
 	update_configuration_warnings()
 
 

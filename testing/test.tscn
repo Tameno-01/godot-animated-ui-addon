@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://buf7u2mktqmar"]
+[gd_scene load_steps=9 format=3 uid="uid://buf7u2mktqmar"]
 
-[ext_resource type="Script" uid="uid://c6p2r4pa4dquj" path="res://addons/animated_ui/animated_control.gd" id="1_ym2x3"]
+[ext_resource type="Script" uid="uid://c6p2r4pa4dquj" path="res://addons/animated_ui/control_animator.gd" id="1_ym2x3"]
 [ext_resource type="Script" uid="uid://1cgfcw7cbykr" path="res://testing/test_animation/wiggleTest.gd" id="2_erfnp"]
 [ext_resource type="Script" uid="uid://ck6k54njyes1o" path="res://addons/animated_ui/ui_animation_library.gd" id="2_v5buj"]
 [ext_resource type="Script" uid="uid://gl35ba507xub" path="res://addons/animated_ui/ui_animation_metadata.gd" id="3_b8tpt"]
+[ext_resource type="Script" uid="uid://bvqbt0f3ljpg0" path="res://testing/fhjdjfhkdfjkh.gd" id="5_0jdpv"]
 
 [sub_resource type="Resource" id="Resource_erfnp"]
 script = ExtResource("2_erfnp")
@@ -37,7 +38,7 @@ offset_right = 92.0
 offset_bottom = 66.0
 
 [node name="ControlAnimator" type="Control" parent="VBoxContainer"]
-custom_minimum_size = Vector2(46, 31)
+custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
 script = ExtResource("1_ym2x3")
 animations = SubResource("Resource_6mlmr")
@@ -45,8 +46,29 @@ metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
 
 [node name="Button" type="Button" parent="VBoxContainer/ControlAnimator"]
 layout_mode = 0
-offset_left = 3.31537
-offset_right = 95.3154
+offset_left = 4.50159
+offset_right = 96.5016
 offset_bottom = 31.0
-rotation = 0.0748553
-text = "aaaa"
+rotation = 0.0435231
+pivot_offset = Vector2(46, 15.5)
+text = "Hai :3"
+
+[node name="ControlAnimator2" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+script = ExtResource("1_ym2x3")
+animations = SubResource("Resource_6mlmr")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ControlAnimator2"]
+layout_mode = 0
+offset_left = 4.50159
+offset_right = 96.5016
+offset_bottom = 31.0
+rotation = 0.0435231
+pivot_offset = Vector2(46, 15.5)
+text = "Hai :3"
+
+[node name="FileDialog" type="FileDialog" parent="."]
+use_native_dialog = true
+script = ExtResource("5_0jdpv")
