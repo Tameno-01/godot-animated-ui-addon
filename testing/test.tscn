@@ -1,74 +1,179 @@
-[gd_scene load_steps=9 format=3 uid="uid://buf7u2mktqmar"]
+[gd_scene load_steps=15 format=3 uid="uid://buf7u2mktqmar"]
 
+[ext_resource type="Script" uid="uid://b2e8g2omkgbru" path="res://addons/animated_ui/ui_animation_group.gd" id="1_6mlmr"]
 [ext_resource type="Script" uid="uid://c6p2r4pa4dquj" path="res://addons/animated_ui/control_animator.gd" id="1_ym2x3"]
-[ext_resource type="Script" uid="uid://1cgfcw7cbykr" path="res://testing/test_animation/wiggleTest.gd" id="2_erfnp"]
-[ext_resource type="Script" uid="uid://ck6k54njyes1o" path="res://addons/animated_ui/ui_animation_library.gd" id="2_v5buj"]
-[ext_resource type="Script" uid="uid://gl35ba507xub" path="res://addons/animated_ui/ui_animation_metadata.gd" id="3_b8tpt"]
-[ext_resource type="Script" uid="uid://bvqbt0f3ljpg0" path="res://testing/fhjdjfhkdfjkh.gd" id="5_0jdpv"]
+[ext_resource type="Script" uid="uid://1cgfcw7cbykr" path="res://testing/test_animation/wiggleTest.gd" id="2_6mlmr"]
+[ext_resource type="Script" uid="uid://gl35ba507xub" path="res://addons/animated_ui/ui_animation_metadata.gd" id="3_ijl77"]
+[ext_resource type="Script" uid="uid://ck6k54njyes1o" path="res://addons/animated_ui/ui_animation_library.gd" id="4_r4e3w"]
+[ext_resource type="Script" uid="uid://ixmbjqnjk75g" path="res://addons/animated_ui/ui_animation_group_settings.gd" id="5_h00um"]
+[ext_resource type="Script" uid="uid://djbqgvif707kp" path="res://testing/test_animation/test_anim_1.gd" id="5_ijl77"]
+[ext_resource type="Script" uid="uid://bynw25d1crcx1" path="res://addons/animated_ui/container_ui_animation_group.gd" id="8_r4e3w"]
 
-[sub_resource type="Resource" id="Resource_erfnp"]
-script = ExtResource("2_erfnp")
+[sub_resource type="Resource" id="Resource_6mlmr"]
+script = ExtResource("2_6mlmr")
 rotation_amplitude = 0.1
 position_amplitude = Vector2(5, 0)
 metadata/_custom_type_script = "uid://1cgfcw7cbykr"
 
-[sub_resource type="Resource" id="Resource_0jdpv"]
-script = ExtResource("3_b8tpt")
-animation = SubResource("Resource_erfnp")
+[sub_resource type="Resource" id="Resource_ijl77"]
+script = ExtResource("3_ijl77")
+animation = SubResource("Resource_6mlmr")
 duration = 1.0
 reverse = false
 metadata/_custom_type_script = "uid://gl35ba507xub"
 
-[sub_resource type="Resource" id="Resource_6mlmr"]
-script = ExtResource("2_v5buj")
-constant = SubResource("Resource_0jdpv")
+[sub_resource type="Resource" id="Resource_neult"]
+script = ExtResource("5_ijl77")
+distance = -100.0
+metadata/_custom_type_script = "uid://djbqgvif707kp"
+
+[sub_resource type="Resource" id="Resource_ijfev"]
+script = ExtResource("3_ijl77")
+animation = SubResource("Resource_neult")
+duration = 0.2
+reverse = false
+metadata/_custom_type_script = "uid://gl35ba507xub"
+
+[sub_resource type="Resource" id="Resource_r4e3w"]
+script = ExtResource("4_r4e3w")
+constant = SubResource("Resource_ijl77")
+show = SubResource("Resource_ijfev")
+show_wait_time = 0.1
+hide_wait_time = 0.1
 metadata/_custom_type_script = "uid://ck6k54njyes1o"
 
-[node name="Control" type="Control"]
+[sub_resource type="Resource" id="Resource_h00um"]
+script = ExtResource("5_h00um")
+default_library = SubResource("Resource_r4e3w")
+show_order = 0
+hide_order = 0
+metadata/_custom_type_script = "uid://ixmbjqnjk75g"
+
+[node name="UiAnimationGroup" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_6mlmr")
+settings = SubResource("Resource_h00um")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
-offset_right = 92.0
-offset_bottom = 66.0
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -26.0
+offset_right = 26.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
 
-[node name="ControlAnimator" type="Control" parent="VBoxContainer"]
+[node name="ControlAnimator" type="Container" parent="VBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
+mouse_filter = 0
 script = ExtResource("1_ym2x3")
-animations = SubResource("Resource_6mlmr")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
 
 [node name="Button" type="Button" parent="VBoxContainer/ControlAnimator"]
-layout_mode = 0
-offset_left = 4.50159
-offset_right = 96.5016
-offset_bottom = 31.0
-rotation = 0.0435231
-pivot_offset = Vector2(46, 15.5)
+layout_mode = 2
 text = "Hai :3"
 
-[node name="ControlAnimator2" type="Control" parent="VBoxContainer"]
+[node name="ControlAnimator2" type="Container" parent="VBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
+mouse_filter = 0
 script = ExtResource("1_ym2x3")
-animations = SubResource("Resource_6mlmr")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
 
 [node name="Button" type="Button" parent="VBoxContainer/ControlAnimator2"]
-layout_mode = 0
-offset_left = 4.50159
-offset_right = 96.5016
-offset_bottom = 31.0
-rotation = 0.0435231
-pivot_offset = Vector2(46, 15.5)
+layout_mode = 2
 text = "Hai :3"
 
-[node name="FileDialog" type="FileDialog" parent="."]
-use_native_dialog = true
-script = ExtResource("5_0jdpv")
+[node name="ControlAnimator3" type="Container" parent="VBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ControlAnimator3"]
+layout_mode = 2
+text = "Hai :3"
+
+[node name="ContainerUiAnimationGroup" type="Container" parent="VBoxContainer"]
+layout_mode = 2
+script = ExtResource("8_r4e3w")
+metadata/_custom_type_script = "uid://bynw25d1crcx1"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ContainerUiAnimationGroup"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="ControlAnimator" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ControlAnimator"]
+layout_mode = 2
+text = "Hai :3"
+
+[node name="ControlAnimator2" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ControlAnimator2"]
+layout_mode = 2
+text = "Hai :3"
+
+[node name="ControlAnimator3" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ControlAnimator3"]
+layout_mode = 2
+text = "Hai :3"
+
+[node name="ControlAnimator4" type="Container" parent="VBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ControlAnimator4"]
+layout_mode = 2
+text = "Hai :3"
+
+[node name="ControlAnimator5" type="Container" parent="VBoxContainer"]
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ControlAnimator5"]
+layout_mode = 2
+text = "Hai :3"
+
+[node name="ControlAnimator6" type="Container" parent="VBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ControlAnimator6"]
+layout_mode = 2
+text = "Hai :3"

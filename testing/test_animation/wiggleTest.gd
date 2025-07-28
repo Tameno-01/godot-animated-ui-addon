@@ -9,6 +9,6 @@ extends UiAnimation
 
 func play(time: float) -> Dictionary[GDScript, Variant]:
 	return {
-		UiAnimatedPropertyPosition: position_amplitude * cos(time * TAU),
-		UiAnimatedPropertyRotation: sin(time * TAU) * rotation_amplitude,
+		UiAnimatedPropertyPosition: position_amplitude * sin(time * TAU),
+		UiAnimatedPropertyRotation: cos(time * TAU) * rotation_amplitude,
 	}

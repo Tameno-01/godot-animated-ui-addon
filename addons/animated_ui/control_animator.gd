@@ -1,20 +1,8 @@
 @tool
 class_name ControlAnimator
-extends Control
+extends AnimatedUiSimpleContaier
 
-var _animated_visible: bool = true
-var _child: Control = null
-var _animation_library: UiAnimationLibray = null:
-	set(value):
-		_animation_library = value
-		_update_constant_animation_playback()
-		if _animation_library != null:
-			_animation_library.constant_animation_changed.connect(
-					_update_constant_animation_playback
-			)
-var _constant_playback: UiAnimationPlayback
-var _show_playback: UiAnimationPlayback = null
-var _hide_playback: UiAnimationPlayback = null
+signal wait_finished
 
 @export var animated_visible: bool = true:
 	set(value):
@@ -27,7 +15,7 @@ var _hide_playback: UiAnimationPlayback = null
 @export var animations: UiAnimationLibray = null:
 	set(value):
 		animations = value
-		_update_animation_library()
+		update_animation_library()
 @export_group("Canvas Group")
 @export var act_as_canvas_group: bool = false:
 	set(value):
@@ -46,15 +34,37 @@ var _hide_playback: UiAnimationPlayback = null
 		blur_mipmaps = value
 		_update_canvas_group_mode()
 
+var _animated_visible: bool = true
+var _child: Control = null
+var _animation_library: UiAnimationLibray = null:
+	set(value):
+		if _animation_library == value:
+			return
+		_animation_library = value
+		_update_constant_animation_playback()
+		if _animation_library != null:
+			_animation_library.modified.connect(
+					_update_constant_animation_playback
+			)
+var _constant_playback: UiAnimationPlayback
+var _show_playback: UiAnimationPlayback = null
+var _hide_playback: UiAnimationPlayback = null
+var _primed_for_showing: bool = false
+var _primed_for_hiding: bool = false
+var _awaiting_hide_finish: bool = false
+var _wait_time_left: float = 0
 
 func _init() -> void:
 	child_entered_tree.connect(_on_child_enter_tree)
 	child_exiting_tree.connect(_on_child_exitig_tree)
+	resized.connect(_update_child_properties)
+	minimum_size_changed.connect(_update_child_properties)
 
 
 func _ready() -> void:
 	update_configuration_warnings()
 	_update_canvas_group_mode()
+	update_animation_library()
 
 
 func _process(delta: float) -> void:
@@ -75,26 +85,18 @@ func _process(delta: float) -> void:
 				_show_playback = null
 			if playback == _hide_playback:
 				_hide_playback = null
-				hide()
+				if _primed_for_hiding:
+					_child.hide()
+					_primed_for_hiding = false
+					_awaiting_hide_finish = true
+				else:
+					hide()
 	for property: GDScript in properties:
 		property.apply(properties[property], _child, self)
-
-
-func _update_canvas_group_mode() -> void:
-	if act_as_canvas_group:
-		RenderingServer.canvas_item_set_canvas_group_mode(
-			get_canvas_item(),
-			RenderingServer.CANVAS_GROUP_MODE_TRANSPARENT,
-			clear_margin,
-			true,
-			fit_margin,
-			blur_mipmaps
-		)
-	else:
-		RenderingServer.canvas_item_set_canvas_group_mode(
-			get_canvas_item(),
-			RenderingServer.CANVAS_GROUP_MODE_DISABLED
-		)
+	if _wait_time_left > 0:
+		_wait_time_left -= delta
+		if _wait_time_left <= 0:
+			wait_finished.emit()
 
 
 func animated_show() -> void:
@@ -102,6 +104,10 @@ func animated_show() -> void:
 		return
 	_animated_visible = true
 	show()
+	if _primed_for_showing:
+		_child.show()
+	_wait_time_left = _animation_library.show_wait_time
+	_primed_for_hiding = false
 	if _animation_library == null:
 		return
 	if _hide_playback != null:
@@ -110,6 +116,8 @@ func animated_show() -> void:
 			_hide_playback = null
 			return
 		_hide_playback = null
+	if _animation_library.show == null:
+		return
 	_show_playback = UiAnimationPlayback.new()
 	_show_playback.animation = _animation_library.show.animation
 	_show_playback.duration = _animation_library.show.duration
@@ -121,6 +129,7 @@ func animated_hide() -> void:
 	if not animated_visible:
 		return
 	_animated_visible = false
+	_wait_time_left = _animation_library.hide_wait_time
 	if _animation_library == null:
 		hide()
 		return
@@ -142,6 +151,55 @@ func animated_hide() -> void:
 	_hide_playback.start()
 
 
+func update_animation_library() -> void:
+	# TODO: do inheritance per-animation
+	if animations != null:
+		_animation_library = animations
+		return
+	var node: Node = get_parent()
+	while node != null:
+		if (
+				node is UiAnimationGroup or node is ContainerUiAnimationGroup
+				and node.settings != null
+				and node.settings.default_library != null
+		):
+			_animation_library = node.settings.default_library
+			return
+		node = node.get_parent()
+	_animation_library = null
+
+
+func prime_for_showing() -> void:
+	if animated_visible:
+		return
+	show()
+	_child.hide()
+	_primed_for_showing = true
+
+
+func un_prime_for_showing() -> void:
+	if animated_visible:
+		return
+	hide()
+	_child.show()
+	_primed_for_showing = false
+
+
+func prime_for_hiding() -> void:
+	_primed_for_hiding = true
+
+
+func finish_hiding_process() -> void:
+	hide()
+	_child.show()
+	_primed_for_hiding = false
+	_awaiting_hide_finish = false
+
+
+func is_awaiting_hide_finish() -> bool:
+	return _awaiting_hide_finish
+
+
 func _notification(what: int) -> void:
 	match what:
 		NOTIFICATION_EDITOR_PRE_SAVE:
@@ -149,8 +207,24 @@ func _notification(what: int) -> void:
 			pass
 
 
+func _update_canvas_group_mode() -> void:
+	if act_as_canvas_group:
+		RenderingServer.canvas_item_set_canvas_group_mode(
+			get_canvas_item(),
+			RenderingServer.CANVAS_GROUP_MODE_TRANSPARENT,
+			clear_margin,
+			true,
+			fit_margin,
+			blur_mipmaps
+		)
+	else:
+		RenderingServer.canvas_item_set_canvas_group_mode(
+			get_canvas_item(),
+			RenderingServer.CANVAS_GROUP_MODE_DISABLED
+		)
+
+
 func _update_constant_animation_playback():
-	print("_update_constant_animation_playback")
 	if _animation_library == null:
 		_constant_playback = null
 		return
@@ -179,20 +253,17 @@ func _update_child(new_child: Control) -> void:
 		_update_child_properties()
 
 
-func _update_child_properties() -> void:
-	size = _child.size
-	custom_minimum_size = _child.get_minimum_size()
-	await get_tree().process_frame
-	_child.size = size
-
-
-func _update_animation_library() -> void:
-	# TODO: check parents until an animation library is found
-	_animation_library = animations
+func _update_child_properties() -> void: pass
+	#if _child == null:
+		#return
+	#size = _child.size
+	#custom_minimum_size = _child.get_minimum_size()
+	#await get_tree().process_frame
+	#_child.size = size
 
 
 func _on_child_enter_tree(node: Node) -> void:
-	if get_child_count(true) == 1:
+	if get_child_count() == 1:
 		_update_child(node)
 	update_configuration_warnings()
 
