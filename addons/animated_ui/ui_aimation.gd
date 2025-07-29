@@ -3,5 +3,5 @@ class_name UiAnimation
 extends Resource
 
 
-func play(time: float) -> Dictionary[GDScript, Variant]:
+func play(_time: float) -> Dictionary[Script, Variant]:
 	return {}

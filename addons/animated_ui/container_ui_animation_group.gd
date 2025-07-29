@@ -2,17 +2,26 @@
 class_name ContainerUiAnimationGroup
 extends AnimatedUiSimpleContaier
 
+@warning_ignore_start("unused_signal")
 signal wait_finished
+signal fully_shown
+signal fully_hidden
 signal settings_modified
+@warning_ignore_restore("unused_signal")
 
 var handler := UiAnimationGroupHandler.new(self)
+var inherited_animated_visible: bool = true:
+	set(value):
+		handler.inherited_animated_visible = value
+	get():
+		return handler.inherited_animated_visible
 
 @export var animated_visible: bool = true:
 	set(value):
 		if value:
-			animated_show(true)
+			animated_show()
 		else:
-			animated_hide(true)
+			animated_hide()
 	get():
 		return handler.animated_visible
 @export var settings: UiAnimationGroupSettings:
@@ -23,9 +32,13 @@ var handler := UiAnimationGroupHandler.new(self)
 			settings.modified.connect(settings_modified.emit)
 
 
-func animated_show(i_triggered_the_animation: bool = true) -> void:
-	handler.animated_show(i_triggered_the_animation)
+func animated_show() -> void:
+	handler.animated_show()
 
 
-func animated_hide(i_triggered_the_animation: bool = true) -> void:
-	handler.animated_hide(i_triggered_the_animation)
+func animated_hide() -> void:
+	handler.animated_hide()
+
+
+func is_actually_visible() -> bool:
+	return handler.actual_animated_visible

@@ -3,6 +3,18 @@ class_name ControlAnimator
 extends AnimatedUiSimpleContaier
 
 signal wait_finished
+signal fully_shown
+signal fully_hidden
+
+var inherited_animated_visible: bool = true:
+	set(value):
+		inherited_animated_visible = value
+		var should_be_visible: bool = _should_be_visible()
+		if _actual_animated_visible != should_be_visible:
+			if should_be_visible:
+				_actual_animated_show()
+			else:
+				_actual_animated_hide()
 
 @export var animated_visible: bool = true:
 	set(value):
@@ -35,6 +47,7 @@ signal wait_finished
 		_update_canvas_group_mode()
 
 var _animated_visible: bool = true
+var _actual_animated_visible: bool = true
 var _child: Control = null
 var _animation_library: UiAnimationLibray = null:
 	set(value):
@@ -54,6 +67,7 @@ var _primed_for_hiding: bool = false
 var _awaiting_hide_finish: bool = false
 var _wait_time_left: float = 0
 
+
 func _init() -> void:
 	child_entered_tree.connect(_on_child_enter_tree)
 	child_exiting_tree.connect(_on_child_exitig_tree)
@@ -68,87 +82,31 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	var playbacks_to_play: Array[UiAnimationPlayback] = []
-	if _constant_playback != null:
-		playbacks_to_play.append(_constant_playback)
-	if _show_playback != null:
-		playbacks_to_play.append(_show_playback)
-	if _hide_playback != null:
-		playbacks_to_play.append(_hide_playback)
-	var properties: Dictionary[GDScript, Variant] = {}
-	for playback: UiAnimationPlayback in playbacks_to_play:
-		var ended: bool = playback.play(properties, delta)
-		if ended:
-			if playback == _constant_playback:
-				_constant_playback = null
-			if playback == _show_playback:
-				_show_playback = null
-			if playback == _hide_playback:
-				_hide_playback = null
-				if _primed_for_hiding:
-					_child.hide()
-					_primed_for_hiding = false
-					_awaiting_hide_finish = true
-				else:
-					hide()
-	for property: GDScript in properties:
-		property.apply(properties[property], _child, self)
 	if _wait_time_left > 0:
 		_wait_time_left -= delta
 		if _wait_time_left <= 0:
 			wait_finished.emit()
+	_deferred_process.call_deferred(delta)
 
 
 func animated_show() -> void:
-	if animated_visible:
+	if _animated_visible:
 		return
 	_animated_visible = true
-	show()
-	if _primed_for_showing:
-		_child.show()
-	_wait_time_left = _animation_library.show_wait_time
-	_primed_for_hiding = false
-	if _animation_library == null:
-		return
-	if _hide_playback != null:
-		if _animation_library.hide == null:
-			_show_playback = _hide_playback.duplicate_and_reverse()
-			_hide_playback = null
-			return
-		_hide_playback = null
-	if _animation_library.show == null:
-		return
-	_show_playback = UiAnimationPlayback.new()
-	_show_playback.animation = _animation_library.show.animation
-	_show_playback.duration = _animation_library.show.duration
-	_show_playback.reverse =  _animation_library.show.reverse
-	_show_playback.start()
+	if _actual_animated_visible != _should_be_visible():
+		_actual_animated_show()
 
 
 func animated_hide() -> void:
-	if not animated_visible:
+	if not _animated_visible:
 		return
 	_animated_visible = false
-	_wait_time_left = _animation_library.hide_wait_time
-	if _animation_library == null:
-		hide()
-		return
-	if _show_playback != null:
-		if _animation_library.hide == null:
-			_hide_playback = _show_playback.duplicate_and_reverse()
-			_show_playback = null
-			return
-		_show_playback = null
-	_hide_playback = UiAnimationPlayback.new()
-	if _animation_library.hide == null:
-		_hide_playback.animation = _animation_library.show.animation
-		_hide_playback.duration = _animation_library.show.duration
-		_hide_playback.reverse = not _animation_library.show.reverse
-	else: # Hide animation exists
-		_hide_playback.animation = _animation_library.hide.animation
-		_hide_playback.duration = _animation_library.hide.duration
-		_hide_playback.reverse = _animation_library.hide.reverse
-	_hide_playback.start()
+	if _actual_animated_visible != _should_be_visible():
+		_actual_animated_hide()
+
+
+func is_actually_visible() -> bool:
+	return _actual_animated_visible
 
 
 func update_animation_library() -> void:
@@ -159,9 +117,9 @@ func update_animation_library() -> void:
 	var node: Node = get_parent()
 	while node != null:
 		if (
-				node is UiAnimationGroup or node is ContainerUiAnimationGroup
-				and node.settings != null
-				and node.settings.default_library != null
+			node is UiAnimationGroup or node is ContainerUiAnimationGroup
+			and node.settings != null
+			and node.settings.default_library != null
 		):
 			_animation_library = node.settings.default_library
 			return
@@ -170,7 +128,7 @@ func update_animation_library() -> void:
 
 
 func prime_for_showing() -> void:
-	if animated_visible:
+	if _actual_animated_visible or not animated_visible:
 		return
 	show()
 	_child.hide()
@@ -178,7 +136,7 @@ func prime_for_showing() -> void:
 
 
 func un_prime_for_showing() -> void:
-	if animated_visible:
+	if _actual_animated_visible or not animated_visible:
 		return
 	hide()
 	_child.show()
@@ -207,6 +165,106 @@ func _notification(what: int) -> void:
 			pass
 
 
+func _actual_animated_show() -> void:
+	if _actual_animated_visible:
+		return
+	_actual_animated_visible = true
+	if not _animated_visible:
+		return
+	show()
+	if _primed_for_showing:
+		_child.show()
+	_wait_time_left = _animation_library.show_wait_time
+	_primed_for_hiding = false
+	if _hide_playback != null:
+		var group: Control = _get_animation_group()
+		if group != null:
+			group.handler.animator_interrupted_hiding(self)
+	if _animation_library == null:
+		return
+	if _hide_playback != null:
+		if _animation_library.hide == null:
+			_show_playback = _hide_playback.duplicate_and_reverse()
+			_hide_playback = null
+			return
+		_hide_playback = null
+	if _animation_library.show == null:
+		return
+	_show_playback = UiAnimationPlayback.new()
+	_show_playback.animation = _animation_library.show.animation
+	_show_playback.duration = _animation_library.show.duration
+	_show_playback.reverse =  _animation_library.show.reverse
+	_show_playback.start()
+
+
+func _actual_animated_hide() -> void:
+	if not _actual_animated_visible:
+		return
+	_actual_animated_visible = false
+	_wait_time_left = _animation_library.hide_wait_time
+	var group: Control = _get_animation_group()
+	if group != null:
+		group.handler.animator_started_hiding(self)
+	if _animation_library == null:
+		_finish_hiding()
+		return
+	if _show_playback != null:
+		if _animation_library.hide == null:
+			_hide_playback = _show_playback.duplicate_and_reverse()
+			_show_playback = null
+			return
+		_show_playback = null
+	_hide_playback = UiAnimationPlayback.new()
+	if _animation_library.hide == null:
+		_hide_playback.animation = _animation_library.show.animation
+		_hide_playback.duration = _animation_library.show.duration
+		_hide_playback.reverse = not _animation_library.show.reverse
+	else: # Hide animation exists
+		_hide_playback.animation = _animation_library.hide.animation
+		_hide_playback.duration = _animation_library.hide.duration
+		_hide_playback.reverse = _animation_library.hide.reverse
+	_hide_playback.start()
+
+
+func _deferred_process(delta: float) -> void:
+	var playbacks_to_play: Array[UiAnimationPlayback] = []
+	if _constant_playback != null:
+		playbacks_to_play.append(_constant_playback)
+	if _show_playback != null:
+		playbacks_to_play.append(_show_playback)
+	if _hide_playback != null:
+		playbacks_to_play.append(_hide_playback)
+	var properties: Dictionary[Script, Variant] = {}
+	for playback: UiAnimationPlayback in playbacks_to_play:
+		var ended: bool = playback.play(properties, delta)
+		if ended:
+			if playback == _show_playback:
+				_show_playback = null
+				fully_shown.emit()
+			if playback == _hide_playback:
+				_hide_playback = null
+				_finish_hiding()
+	for property: Script in properties:
+		property.apply(properties[property], _child, self)
+
+
+func _should_be_visible() -> bool:
+	return _animated_visible and inherited_animated_visible
+
+
+func _finish_hiding() -> void:
+	if _primed_for_hiding:
+		_child.hide()
+		_primed_for_hiding = false
+		_awaiting_hide_finish = true
+	else:
+		hide()
+	var group: Control = _get_animation_group()
+	if group != null:
+		group.handler.animator_finsihed_hiding(self)
+	fully_hidden.emit()
+
+
 func _update_canvas_group_mode() -> void:
 	if act_as_canvas_group:
 		RenderingServer.canvas_item_set_canvas_group_mode(
@@ -224,7 +282,7 @@ func _update_canvas_group_mode() -> void:
 		)
 
 
-func _update_constant_animation_playback():
+func _update_constant_animation_playback() -> void:
 	if _animation_library == null:
 		_constant_playback = null
 		return
@@ -284,3 +342,15 @@ func _get_configuration_warnings() -> PackedStringArray:
 	elif not (get_child(0, true) is Control):
 		warnings.append("Child of AnimatedControl must be a Control node.")
 	return warnings
+
+
+func _get_animation_group() -> Control:
+	var parent: Node = get_parent()
+	while parent != null:
+		if (
+			parent is UiAnimationGroup
+			or parent is ContainerUiAnimationGroup
+		):
+			return parent
+		parent = parent.get_parent()
+	return null

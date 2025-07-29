@@ -15,7 +15,7 @@ func start() -> void:
 
 # This function takes in a refernce to a dictionary and modifies said dictionary
 # The boolean output is whether the animation finished or not
-func play(properties: Dictionary[GDScript, Variant], delta: float) -> bool:
+func play(properties: Dictionary[Script, Variant], delta: float) -> bool:
 	if reverse:
 		if progress == 0.0 and not loop:
 			return true
@@ -28,8 +28,8 @@ func play(properties: Dictionary[GDScript, Variant], delta: float) -> bool:
 		progress = fposmod(progress, duration)
 	else:
 		progress = clamp(progress, 0.0, 1.0)
-	var anim_output: Dictionary[GDScript, Variant] = animation.play(progress)
-	for property: GDScript in anim_output:
+	var anim_output: Dictionary[Script, Variant] = animation.play(progress)
+	for property: Script in anim_output:
 		if properties.has(property):
 			properties[property] = property.combine(properties[property], anim_output[property])
 		else:
@@ -38,7 +38,7 @@ func play(properties: Dictionary[GDScript, Variant], delta: float) -> bool:
 
 
 func duplicate_and_reverse() -> UiAnimationPlayback:
-	var clone = UiAnimationPlayback.new()
+	var clone: UiAnimationPlayback = UiAnimationPlayback.new()
 	clone.animation = animation
 	clone.progress = progress
 	clone.duration = duration

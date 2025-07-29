@@ -7,7 +7,7 @@ extends UiAnimation
 @export var position_amplitude: Vector2 = Vector2(5.0, 0.0)
 
 
-func play(time: float) -> Dictionary[GDScript, Variant]:
+func play(time: float) -> Dictionary[Script, Variant]:
 	return {
 		UiAnimatedPropertyPosition: position_amplitude * sin(time * TAU),
 		UiAnimatedPropertyRotation: cos(time * TAU) * rotation_amplitude,
