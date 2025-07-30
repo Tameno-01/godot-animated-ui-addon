@@ -1,42 +1,27 @@
-[gd_scene load_steps=15 format=3 uid="uid://buf7u2mktqmar"]
+[gd_scene load_steps=12 format=3 uid="uid://buf7u2mktqmar"]
 
 [ext_resource type="Script" uid="uid://b2e8g2omkgbru" path="res://addons/animated_ui/ui_animation_group.gd" id="1_6mlmr"]
 [ext_resource type="Script" uid="uid://c6p2r4pa4dquj" path="res://addons/animated_ui/control_animator.gd" id="1_ym2x3"]
-[ext_resource type="Script" uid="uid://1cgfcw7cbykr" path="res://testing/test_animation/wiggleTest.gd" id="2_6mlmr"]
 [ext_resource type="Script" uid="uid://gl35ba507xub" path="res://addons/animated_ui/ui_animation_metadata.gd" id="3_ijl77"]
 [ext_resource type="Script" uid="uid://ck6k54njyes1o" path="res://addons/animated_ui/ui_animation_library.gd" id="4_r4e3w"]
 [ext_resource type="Script" uid="uid://ixmbjqnjk75g" path="res://addons/animated_ui/ui_animation_group_settings.gd" id="5_h00um"]
 [ext_resource type="Script" uid="uid://if0g58ijfm1h" path="res://testing/test_animation/test_anim_2.gd" id="5_r4e3w"]
 [ext_resource type="Script" uid="uid://bynw25d1crcx1" path="res://addons/animated_ui/container_ui_animation_group.gd" id="8_r4e3w"]
 
-[sub_resource type="Resource" id="Resource_6mlmr"]
-script = ExtResource("2_6mlmr")
-rotation_amplitude = 0.1
-position_amplitude = Vector2(5, 0)
-metadata/_custom_type_script = "uid://1cgfcw7cbykr"
-
 [sub_resource type="Resource" id="Resource_ijl77"]
-script = ExtResource("3_ijl77")
-animation = SubResource("Resource_6mlmr")
-duration = 1.0
-reverse = false
-metadata/_custom_type_script = "uid://gl35ba507xub"
-
-[sub_resource type="Resource" id="Resource_neult"]
 script = ExtResource("5_r4e3w")
 metadata/_custom_type_script = "uid://if0g58ijfm1h"
 
-[sub_resource type="Resource" id="Resource_ijfev"]
+[sub_resource type="Resource" id="Resource_neult"]
 script = ExtResource("3_ijl77")
-animation = SubResource("Resource_neult")
+animation = SubResource("Resource_ijl77")
 duration = 0.2
 reverse = false
 metadata/_custom_type_script = "uid://gl35ba507xub"
 
 [sub_resource type="Resource" id="Resource_r4e3w"]
 script = ExtResource("4_r4e3w")
-constant = SubResource("Resource_ijl77")
-show = SubResource("Resource_ijfev")
+show = SubResource("Resource_neult")
 show_wait_time = 0.05
 hide_wait_time = 0.05
 metadata/_custom_type_script = "uid://ck6k54njyes1o"
@@ -73,6 +58,7 @@ alignment = 1
 [node name="ControlAnimator" type="Container" parent="VBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
@@ -84,6 +70,7 @@ text = "Hai :3"
 [node name="ControlAnimator2" type="Container" parent="VBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
@@ -95,6 +82,7 @@ text = "Hai :3"
 [node name="ControlAnimator3" type="Container" parent="VBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
@@ -105,6 +93,7 @@ text = "Hai :3"
 
 [node name="ContainerUiAnimationGroup" type="Container" parent="VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
 script = ExtResource("8_r4e3w")
 metadata/_custom_type_script = "uid://bynw25d1crcx1"
 
@@ -115,6 +104,7 @@ size_flags_horizontal = 0
 [node name="ControlAnimator" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
@@ -126,6 +116,7 @@ text = "Hai :3"
 [node name="ControlAnimator2" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
@@ -137,6 +128,7 @@ text = "Hai :3"
 [node name="ControlAnimator3" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
@@ -147,49 +139,140 @@ text = "Hai :3"
 
 [node name="ContainerUiAnimationGroup" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 script = ExtResource("8_r4e3w")
 metadata/_custom_type_script = "uid://bynw25d1crcx1"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup"]
+layout_mode = 2
+size_flags_horizontal = 0
+alignment = 1
+
+[node name="ControlAnimator" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup/HBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup/HBoxContainer/ControlAnimator"]
+layout_mode = 2
+text = "Hai :3"
+
+[node name="ControlAnimator2" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup/HBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup/HBoxContainer/ControlAnimator2"]
+layout_mode = 2
+text = "Hai :3"
+
+[node name="ContainerUiAnimationGroup2" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("8_r4e3w")
+metadata/_custom_type_script = "uid://bynw25d1crcx1"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup2"]
+layout_mode = 2
+size_flags_horizontal = 0
+alignment = 1
+
+[node name="ControlAnimator" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup2/HBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup2/HBoxContainer/ControlAnimator"]
+layout_mode = 2
+text = "Hai :3"
+
+[node name="ControlAnimator2" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup2/HBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup2/HBoxContainer/ControlAnimator2"]
+layout_mode = 2
+text = "Hai :3"
+
+[node name="ControlAnimator3" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup2/HBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup2/HBoxContainer/ControlAnimator3"]
+layout_mode = 2
+text = "Hai :3"
+
+[node name="ContainerUiAnimationGroup3" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("8_r4e3w")
+metadata/_custom_type_script = "uid://bynw25d1crcx1"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup3"]
 layout_mode = 2
 size_flags_horizontal = 0
 
-[node name="ControlAnimator" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup/VBoxContainer"]
+[node name="ControlAnimator" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup3/HBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
 mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
 
-[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ControlAnimator"]
+[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup3/HBoxContainer/ControlAnimator"]
 layout_mode = 2
 text = "Hai :3"
 
-[node name="ControlAnimator2" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup/VBoxContainer"]
+[node name="ControlAnimator2" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup3/HBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
 mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
 
-[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ControlAnimator2"]
+[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup3/HBoxContainer/ControlAnimator2"]
 layout_mode = 2
 text = "Hai :3"
 
-[node name="ControlAnimator3" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup/VBoxContainer"]
+[node name="ControlAnimator3" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup3/HBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
 mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
 
-[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ControlAnimator3"]
+[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup3/HBoxContainer/ControlAnimator3"]
+layout_mode = 2
+text = "Hai :3"
+
+[node name="ControlAnimator4" type="Container" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup3/HBoxContainer"]
+custom_minimum_size = Vector2(52, 31)
+layout_mode = 2
+mouse_filter = 0
+script = ExtResource("1_ym2x3")
+metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
+
+[node name="Button" type="Button" parent="VBoxContainer/ContainerUiAnimationGroup/VBoxContainer/ContainerUiAnimationGroup3/HBoxContainer/ControlAnimator4"]
 layout_mode = 2
 text = "Hai :3"
 
 [node name="ControlAnimator4" type="Container" parent="VBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
@@ -200,6 +283,7 @@ text = "Hai :3"
 
 [node name="ControlAnimator5" type="Container" parent="VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
@@ -211,6 +295,7 @@ text = "Hai :3"
 [node name="ControlAnimator6" type="Container" parent="VBoxContainer"]
 custom_minimum_size = Vector2(52, 31)
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"

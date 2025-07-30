@@ -91,12 +91,7 @@ func animator_finsihed_hiding(animator: Control) -> void:
 		and _what_were_waiting_for == null
 		and not _should_be_visible()
 	):
-		if _i_triggered_the_animation:
-			finish_hiding_recursive(_node)
-		var group: Control = _get_animation_group()
-		if group != null:
-			group.handler.animator_finsihed_hiding(_node)
-		_node.fully_hidden.emit()
+		_finish_hiding()
 
 
 func animator_interrupted_hiding(animator: Control) -> void:
@@ -206,6 +201,11 @@ func _animate_as_next(node: Control, show: bool) -> void:
 	if node == null:
 		_what_were_waiting_for = null
 		wait_finished.emit()
+		if (
+			_hiding_animators.is_empty()
+			and not _should_be_visible()
+		):
+			_finish_hiding()
 		return
 	_what_were_waiting_for = node
 	_what_were_waiting_for.wait_finished.connect(what_were_waiting_for_finished)
@@ -225,3 +225,12 @@ func _get_animation_group() -> Control:
 			return parent
 		parent = parent.get_parent()
 	return null
+
+
+func _finish_hiding() -> void:
+	if _i_triggered_the_animation:
+		finish_hiding_recursive(_node)
+	var group: Control = _get_animation_group()
+	if group != null:
+		group.handler.animator_finsihed_hiding(_node)
+	_node.fully_hidden.emit()
