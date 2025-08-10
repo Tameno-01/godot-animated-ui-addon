@@ -60,7 +60,6 @@ var _hide_wait_time: float = DEFAULT_WAIT_TIME
 
 var _animated_visible: bool = true
 var _actual_animated_visible: bool = true
-var _child: Control = null
 var _constant_playback: UiAnimationPlayback
 var _show_playback: UiAnimationPlayback = null
 var _hide_playback: UiAnimationPlayback = null
@@ -69,25 +68,18 @@ var _primed_for_hiding: bool = false
 var _awaiting_hide_finish: bool = false
 var _wait_time_left: float = 0
 
-func _init() -> void:
-	child_entered_tree.connect(_on_child_enter_tree)
-	child_exiting_tree.connect(_on_child_exitig_tree)
-	resized.connect(_update_child_properties)
-	minimum_size_changed.connect(_update_child_properties)
-
 
 func _ready() -> void:
-	update_configuration_warnings()
 	_update_canvas_group_mode()
 	update_animation_library()
 
 
 func _process(delta: float) -> void:
+	_animate(delta)
 	if _wait_time_left > 0:
 		_wait_time_left -= delta
 		if _wait_time_left <= 0:
 			wait_finished.emit()
-	_deferred_process.call_deferred(delta)
 
 
 func animated_show() -> void:
@@ -111,7 +103,6 @@ func is_actually_visible() -> bool:
 
 
 func update_animation_library() -> void:
-	print("update")
 	var library_array: Array[UiAnimationLibray] = []
 	if animations != null:
 		library_array.append(animations)
@@ -157,7 +148,7 @@ func prime_for_showing() -> void:
 	if _actual_animated_visible or not animated_visible:
 		return
 	show()
-	_child.hide()
+	active_child.hide()
 	_primed_for_showing = true
 
 
@@ -165,7 +156,7 @@ func un_prime_for_showing() -> void:
 	if _actual_animated_visible or not animated_visible:
 		return
 	hide()
-	_child.show()
+	active_child.show()
 	_primed_for_showing = false
 
 
@@ -175,7 +166,7 @@ func prime_for_hiding() -> void:
 
 func finish_hiding_process() -> void:
 	hide()
-	_child.show()
+	active_child.show()
 	_primed_for_hiding = false
 	_awaiting_hide_finish = false
 
@@ -199,7 +190,7 @@ func _actual_animated_show() -> void:
 		return
 	show()
 	if _primed_for_showing:
-		_child.show()
+		active_child.show()
 	_wait_time_left = _show_wait_time
 	_primed_for_hiding = false
 	if _hide_playback != null:
@@ -210,6 +201,7 @@ func _actual_animated_show() -> void:
 		if _hide_anim == null:
 			_show_playback = _hide_playback.duplicate_and_reverse()
 			_hide_playback = null
+			_animate(0.0)
 			return
 		_hide_playback = null
 	if _show_anim == null:
@@ -219,6 +211,7 @@ func _actual_animated_show() -> void:
 	_show_playback.duration = _show_anim.duration
 	_show_playback.reverse =  _show_anim.reverse
 	_show_playback.start()
+	_animate(0.0)
 
 
 func _actual_animated_hide() -> void:
@@ -233,6 +226,7 @@ func _actual_animated_hide() -> void:
 		if _hide_anim == null:
 			_hide_playback = _show_playback.duplicate_and_reverse()
 			_show_playback = null
+			_animate(0.0)
 			return
 		_show_playback = null
 	_hide_playback = UiAnimationPlayback.new()
@@ -245,9 +239,10 @@ func _actual_animated_hide() -> void:
 		_hide_playback.duration = _hide_anim.duration
 		_hide_playback.reverse = _hide_anim.reverse
 	_hide_playback.start()
+	_animate(0.0)
 
 
-func _deferred_process(delta: float) -> void:
+func _animate(delta: float) -> void:
 	var playbacks_to_play: Array[UiAnimationPlayback] = []
 	if _constant_playback != null:
 		playbacks_to_play.append(_constant_playback)
@@ -266,7 +261,7 @@ func _deferred_process(delta: float) -> void:
 				_hide_playback = null
 				_finish_hiding()
 	for property: Script in properties:
-		property.apply(properties[property], _child, self)
+		property.apply(properties[property], active_child, self)
 
 
 func _should_be_visible() -> bool:
@@ -275,7 +270,7 @@ func _should_be_visible() -> bool:
 
 func _finish_hiding() -> void:
 	if _primed_for_hiding:
-		_child.hide()
+		active_child.hide()
 		_primed_for_hiding = false
 		_awaiting_hide_finish = true
 	else:
@@ -316,50 +311,6 @@ func _update_constant_animation_playback() -> void:
 	_constant_playback.reverse = _constant_anim.reverse
 	_constant_playback.loop = true
 	_constant_playback.start()
-
-
-func _update_child(new_child: Control) -> void:
-	if _child != null:
-		_child.resized.disconnect(_update_child_properties)
-		_child.minimum_size_changed.disconnect(_update_child_properties)
-	_child = new_child
-	if _child != null:
-		_child.resized.connect(_update_child_properties)
-		_child.minimum_size_changed.connect(_update_child_properties)
-		_update_child_properties()
-
-
-func _update_child_properties() -> void: pass
-	#if _child == null:
-		#return
-	#size = _child.size
-	#custom_minimum_size = _child.get_minimum_size()
-	#await get_tree().process_frame
-	#_child.size = size
-
-
-func _on_child_enter_tree(node: Node) -> void:
-	if get_child_count() == 1:
-		_update_child(node)
-	update_configuration_warnings()
-
-
-func _on_child_exitig_tree(node: Node) -> void:
-	if node == _child:
-		if get_child_count() == 0:
-			_update_child(null)
-		else:
-			_update_child(get_child(0))
-	update_configuration_warnings()
-
-
-func _get_configuration_warnings() -> PackedStringArray:
-	var warnings: PackedStringArray = []
-	if get_child_count(true) != 1:
-		warnings.append("AnimatedControl nodes must have exactly 1 child.")
-	elif not (get_child(0, true) is Control):
-		warnings.append("Child of AnimatedControl must be a Control node.")
-	return warnings
 
 
 func _get_animation_group() -> Control:
