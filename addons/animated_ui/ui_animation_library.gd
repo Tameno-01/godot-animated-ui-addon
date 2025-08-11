@@ -4,12 +4,21 @@ extends Resource
 
 signal modified
 
+enum HideModes {
+	INHERIT,
+	SHOW_IN_REVERSE,
+	LAYER,
+	INTERRUPT,
+}
+
+@export_group("Constant")
 @export var constant: UiAnimationMetadata:
 	set(value):
 		constant = value
 		modified.emit()
 		if constant != null:
 			constant.modified.connect(modified.emit)
+@export_group("Visibility")
 @export var show: UiAnimationMetadata:
 	set(value):
 		show = value
@@ -22,6 +31,10 @@ signal modified
 		modified.emit()
 		if hide != null:
 			hide.modified.connect(modified.emit)
+@export var hide_mode: HideModes:
+	set(value):
+		hide_mode = value
+		modified.emit()
 @export var show_wait_time: float = -1.0:
 	set(value):
 		show_wait_time = value

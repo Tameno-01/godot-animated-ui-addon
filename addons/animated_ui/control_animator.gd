@@ -7,6 +7,7 @@ signal fully_shown
 signal fully_hidden
 
 const DEFAULT_WAIT_TIME: float = 0.05
+const DEFAULT_HIDE_MODE: UiAnimationLibray.HideModes = UiAnimationLibray.HideModes.INTERRUPT
 
 var inherited_animated_visible: bool = true:
 	set(value):
@@ -54,6 +55,7 @@ var inherited_animated_visible: bool = true:
 
 var _constant_anim: UiAnimationMetadata = null
 var _show_anim: UiAnimationMetadata = null
+var _hide_mode: UiAnimationLibray.HideModes
 var _hide_anim: UiAnimationMetadata = null
 var _show_wait_time: float = DEFAULT_WAIT_TIME
 var _hide_wait_time: float = DEFAULT_WAIT_TIME
@@ -133,6 +135,11 @@ func update_animation_library() -> void:
 		if library.hide != null:
 			_hide_anim = library.hide
 			break
+	_hide_mode = DEFAULT_HIDE_MODE
+	for library in library_array:
+		if library.hide_mode != UiAnimationLibray.HideModes.INHERIT:
+			_hide_mode = library.hide_mode
+			break
 	_show_wait_time = DEFAULT_WAIT_TIME
 	for library in library_array:
 		if library.show_wait_time >= 0:
@@ -144,20 +151,13 @@ func update_animation_library() -> void:
 			_hide_wait_time = library.hide_wait_time
 			break
 
+
 func prime_for_showing() -> void:
-	if _actual_animated_visible or not animated_visible:
+	if is_technically_visible() or not animated_visible:
 		return
 	show()
 	active_child.hide()
 	_primed_for_showing = true
-
-
-func un_prime_for_showing() -> void:
-	if _actual_animated_visible or not animated_visible:
-		return
-	hide()
-	active_child.show()
-	_primed_for_showing = false
 
 
 func prime_for_hiding() -> void:
@@ -173,6 +173,12 @@ func finish_hiding_process() -> void:
 
 func is_awaiting_hide_finish() -> bool:
 	return _awaiting_hide_finish
+
+
+func is_technically_visible() -> bool:
+	if not active_child:
+		return false
+	return visible and active_child.visible
 
 
 func _notification(what: int) -> void:
@@ -197,13 +203,16 @@ func _actual_animated_show() -> void:
 		var group: Control = _get_animation_group()
 		if group != null:
 			group.handler.animator_interrupted_hiding(self)
-	if _hide_playback != null:
-		if _hide_anim == null:
-			_show_playback = _hide_playback.duplicate_and_reverse()
-			_hide_playback = null
-			_animate(0.0)
-			return
-		_hide_playback = null
+		match _hide_mode:
+			UiAnimationLibray.HideModes.SHOW_IN_REVERSE:
+				_show_playback = _hide_playback.duplicate_and_reverse()
+				_hide_playback = null
+				_animate(0.0)
+				return
+			UiAnimationLibray.HideModes.LAYER:
+				pass
+			UiAnimationLibray.HideModes.INTERRUPT:
+				_hide_playback = null
 	if _show_anim == null:
 		return
 	_show_playback = UiAnimationPlayback.new()
@@ -223,21 +232,32 @@ func _actual_animated_hide() -> void:
 	if group != null:
 		group.handler.animator_started_hiding(self)
 	if _show_playback != null:
-		if _hide_anim == null:
-			_hide_playback = _show_playback.duplicate_and_reverse()
-			_show_playback = null
-			_animate(0.0)
+		match _hide_mode:
+			UiAnimationLibray.HideModes.SHOW_IN_REVERSE:
+				_hide_playback = _show_playback.duplicate_and_reverse()
+				_show_playback = null
+				_animate(0.0)
+				return
+			UiAnimationLibray.HideModes.LAYER:
+				pass
+			UiAnimationLibray.HideModes.INTERRUPT:
+				_show_playback = null
+	var new_hide_playback: UiAnimationPlayback = UiAnimationPlayback.new()
+	if _hide_mode == UiAnimationLibray.HideModes.SHOW_IN_REVERSE:
+		if _show_anim == null:
+			_finish_hiding()
 			return
-		_show_playback = null
-	_hide_playback = UiAnimationPlayback.new()
-	if _hide_anim == null:
-		_hide_playback.animation = _show_anim.animation
-		_hide_playback.duration = _show_anim.duration
-		_hide_playback.reverse = not _show_anim.reverse
-	else: # Hide animation exists
-		_hide_playback.animation = _hide_anim.animation
-		_hide_playback.duration = _hide_anim.duration
-		_hide_playback.reverse = _hide_anim.reverse
+		new_hide_playback.animation = _show_anim.animation
+		new_hide_playback.duration = _show_anim.duration
+		new_hide_playback.reverse = not _show_anim.reverse
+	else: # We don't need to use the show aniation
+		if _hide_anim == null:
+			_finish_hiding()
+			return
+		new_hide_playback.animation = _hide_anim.animation
+		new_hide_playback.duration = _hide_anim.duration
+		new_hide_playback.reverse = _hide_anim.reverse
+	_hide_playback = new_hide_playback
 	_hide_playback.start()
 	_animate(0.0)
 
@@ -254,10 +274,10 @@ func _animate(delta: float) -> void:
 	for playback: UiAnimationPlayback in playbacks_to_play:
 		var ended: bool = playback.play(properties, delta)
 		if ended:
-			if playback == _show_playback:
+			if playback == _show_playback and _animated_visible:
 				_show_playback = null
 				fully_shown.emit()
-			if playback == _hide_playback:
+			if playback == _hide_playback and not _animated_visible:
 				_hide_playback = null
 				_finish_hiding()
 	for property: Script in properties:
