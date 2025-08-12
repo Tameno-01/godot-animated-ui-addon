@@ -274,10 +274,10 @@ func _animate(delta: float) -> void:
 	for playback: UiAnimationPlayback in playbacks_to_play:
 		var ended: bool = playback.play(properties, delta)
 		if ended:
-			if playback == _show_playback and _animated_visible:
+			if playback == _show_playback and _actual_animated_visible:
 				_show_playback = null
 				fully_shown.emit()
-			if playback == _hide_playback and not _animated_visible:
+			if playback == _hide_playback and not _actual_animated_visible:
 				_hide_playback = null
 				_finish_hiding()
 	for property: Script in properties:
