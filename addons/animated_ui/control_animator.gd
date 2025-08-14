@@ -69,6 +69,7 @@ var _primed_for_showing: bool = false
 var _primed_for_hiding: bool = false
 var _awaiting_hide_finish: bool = false
 var _wait_time_left: float = 0
+var _active_properties: Dictionary[Script, Variant] = {}
 
 
 func _ready() -> void:
@@ -125,6 +126,10 @@ func update_animation_library() -> void:
 			break
 	if _constant_anim != prev_constant_anim:
 		_update_constant_animation_playback()
+		if prev_constant_anim != null:
+			prev_constant_anim.modified.disconnect(_update_constant_animation_playback)
+		if _constant_anim != null:
+			_constant_anim.modified.connect(_update_constant_animation_playback)
 	_show_anim = null
 	for library in library_array:
 		if library.show != null:
@@ -280,8 +285,15 @@ func _animate(delta: float) -> void:
 			if playback == _hide_playback and not _actual_animated_visible:
 				_hide_playback = null
 				_finish_hiding()
-	for property: Script in properties:
-		property.apply(properties[property], active_child, self)
+	var unused_properties: Array[Script] = _active_properties.keys()
+	for property in properties:
+		if _active_properties.has(property):
+			unused_properties.erase(property)
+		else:
+			_active_properties[property] = property.setup(active_child)
+		property.apply(properties[property], active_child, _active_properties[property])
+	for property in unused_properties:
+		property.cleanup(active_child, _active_properties[property])
 
 
 func _should_be_visible() -> bool:

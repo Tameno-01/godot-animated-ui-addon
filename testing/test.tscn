@@ -1,29 +1,42 @@
-[gd_scene load_steps=11 format=3 uid="uid://buf7u2mktqmar"]
+[gd_scene load_steps=14 format=3 uid="uid://buf7u2mktqmar"]
 
 [ext_resource type="Script" uid="uid://b2e8g2omkgbru" path="res://addons/animated_ui/ui_animation_group.gd" id="1_6mlmr"]
 [ext_resource type="Script" uid="uid://c6p2r4pa4dquj" path="res://addons/animated_ui/control_animator.gd" id="1_ym2x3"]
-[ext_resource type="Script" uid="uid://cg7gn80moko30" path="res://testing/test_animation/test_anim_3.gd" id="3_6mlmr"]
+[ext_resource type="Script" uid="uid://djbqgvif707kp" path="res://testing/test_animation/test_anim_1.gd" id="2_ijl77"]
 [ext_resource type="Script" uid="uid://gl35ba507xub" path="res://addons/animated_ui/ui_animation_metadata.gd" id="3_ijl77"]
 [ext_resource type="Script" uid="uid://ck6k54njyes1o" path="res://addons/animated_ui/ui_animation_library.gd" id="4_r4e3w"]
 [ext_resource type="Script" uid="uid://ixmbjqnjk75g" path="res://addons/animated_ui/ui_animation_group_settings.gd" id="5_h00um"]
+[ext_resource type="Script" uid="uid://if0g58ijfm1h" path="res://testing/test_animation/test_anim_2.gd" id="5_r4e3w"]
 
-[sub_resource type="Resource" id="Resource_ijl77"]
-script = ExtResource("3_6mlmr")
-metadata/_custom_type_script = "uid://cg7gn80moko30"
+[sub_resource type="Resource" id="Resource_ijfev"]
+script = ExtResource("2_ijl77")
+metadata/_custom_type_script = "uid://djbqgvif707kp"
+
+[sub_resource type="Resource" id="Resource_j15ly"]
+script = ExtResource("3_ijl77")
+animation = SubResource("Resource_ijfev")
+duration = 1.0
+reverse = true
+metadata/_custom_type_script = "uid://gl35ba507xub"
+
+[sub_resource type="Resource" id="Resource_tdwqn"]
+script = ExtResource("5_r4e3w")
+metadata/_custom_type_script = "uid://if0g58ijfm1h"
 
 [sub_resource type="Resource" id="Resource_neult"]
 script = ExtResource("3_ijl77")
-animation = SubResource("Resource_ijl77")
-duration = 0.2
+animation = SubResource("Resource_tdwqn")
+duration = 5.0
 reverse = false
 metadata/_custom_type_script = "uid://gl35ba507xub"
 
 [sub_resource type="Resource" id="Resource_r4e3w"]
 script = ExtResource("4_r4e3w")
 show = SubResource("Resource_neult")
-hide_mode = 1
-show_wait_time = -1.0
-hide_wait_time = -1.0
+hide = SubResource("Resource_j15ly")
+hide_mode = 2
+show_wait_time = 0.5
+hide_wait_time = 0.5
 metadata/_custom_type_script = "uid://ck6k54njyes1o"
 
 [sub_resource type="Resource" id="Resource_h00um"]
@@ -86,7 +99,7 @@ mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
 
-[node name="Button" type="Button" parent="VBoxContainer/ControlAnimator2"]
+[node name="Button3" type="Button" parent="VBoxContainer/ControlAnimator2"]
 layout_mode = 2
 text = "Hai :3"
 
@@ -97,6 +110,6 @@ mouse_filter = 0
 script = ExtResource("1_ym2x3")
 metadata/_custom_type_script = "uid://c6p2r4pa4dquj"
 
-[node name="Button" type="Button" parent="VBoxContainer/ControlAnimator3"]
+[node name="Button4" type="Button" parent="VBoxContainer/ControlAnimator3"]
 layout_mode = 2
 text = "Hai :3"
