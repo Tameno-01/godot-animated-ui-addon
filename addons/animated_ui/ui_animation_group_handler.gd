@@ -124,6 +124,17 @@ func _actual_animated_hide(i_triggered_the_animation: bool) -> void:
 	_animate_as_next(_find_next_node_to_animate(_node, _currently_showing), _currently_showing)
 
 
+func _set_inherited_animated_visible(parent: Node, to: bool) -> void:
+	for child in parent.get_children():
+		if (
+			child is ControlAnimator
+			or child is UiAnimationGroup
+			or child is ContainerUiAnimationGroup
+		):
+			child.inherited_animated_visible = to
+		_set_inherited_animated_visible(child, to)
+
+
 func _should_be_visible() -> bool:
 	return animated_visible and inherited_animated_visible
 
@@ -201,11 +212,11 @@ func _animate_as_next(node: Control, show: bool) -> void:
 	if node == null:
 		_what_were_waiting_for = null
 		wait_finished.emit()
-		if (
-			_hiding_animators.is_empty()
-			and not _should_be_visible()
-		):
-			_finish_hiding()
+		if _should_be_visible():
+			_finish_showing()
+		else:
+			if _hiding_animators.is_empty():
+				_finish_hiding()
 		return
 	_what_were_waiting_for = node
 	_what_were_waiting_for.wait_finished.connect(what_were_waiting_for_finished)
@@ -227,9 +238,15 @@ func _get_animation_group() -> Control:
 	return null
 
 
+func _finish_showing() -> void:
+	if _i_triggered_the_animation:
+		_set_inherited_animated_visible(_node, true)
+
+
 func _finish_hiding() -> void:
 	if _i_triggered_the_animation:
 		finish_hiding_recursive(_node)
+		_set_inherited_animated_visible(_node, false)
 	var group: Control = _get_animation_group()
 	if group != null:
 		group.handler.animator_finsihed_hiding(_node)
