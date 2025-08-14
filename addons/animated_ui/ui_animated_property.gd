@@ -12,8 +12,7 @@ static func setup(_control: Control) -> Variant:
 
 
 static func combine(_value_a: Variant, _value_b: Variant) -> Variant:
-	assert(false, "(Animated Ui) Combine function not defined.")
-	return null
+	return _value_b
 
 
 static func apply(_value: Variant, _control: Control, _data: Variant) -> void:
